@@ -11,6 +11,7 @@ import cors from "cors"
 import { attachUser } from "./src/utils/attachUser.js";
 import cookieParser from "cookie-parser"
 
+import path from 'path';
 dotenv.config("./.env")
 
 const app = express();
@@ -28,7 +29,9 @@ app.use(attachUser)
 
 app.use("/api/user",user_routes)
 app.use("/api/auth",auth_routes)
+
 app.use("/api/create",short_url)
+app.use('/uploads', express.static(path.resolve('uploads'))); // Serve uploaded files with absolute path
 app.get("/:id",redirectFromShortUrl)
 
 app.use(errorHandler)

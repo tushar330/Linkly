@@ -32,21 +32,21 @@ const LoginForm = ({ state }) => {
 
     return (
         <div className="w-full max-w-md mx-auto">
-            <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
+            <div className="bg-slate-800/80 backdrop-blur-lg border border-slate-700 shadow-xl rounded-2xl px-8 pt-8 pb-8 mb-4">
+                <h2 className="text-2xl font-bold text-center mb-6 text-white">Login</h2>
 
                 {error && (
-                    <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-200 rounded-md text-sm">
                         {error}
                     </div>
                 )}
 
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                    <label className="block text-slate-300 text-sm font-bold mb-2" htmlFor="email">
                         Email
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="appearance-none border border-slate-600 rounded-lg w-full py-3 px-4 bg-slate-700/50 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 placeholder-slate-400"
                         id="email"
                         type="email"
                         placeholder="Email"
@@ -57,11 +57,11 @@ const LoginForm = ({ state }) => {
                 </div>
 
                 <div className="mb-6">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                    <label className="block text-slate-300 text-sm font-bold mb-2" htmlFor="password">
                         Password
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="appearance-none border border-slate-600 rounded-lg w-full py-3 px-4 bg-slate-700/50 text-white leading-tight focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 placeholder-slate-400"
                         id="password"
                         type="password"
                         placeholder="******************"
@@ -73,7 +73,7 @@ const LoginForm = ({ state }) => {
 
                 <div className="flex items-center justify-between">
                     <button
-                        className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        className={`bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-slate-800 w-full transition-all duration-200 transform hover:scale-[1.02] ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         type="submit"
                         onClick={handleSubmit}
                         disabled={loading}
@@ -82,9 +82,9 @@ const LoginForm = ({ state }) => {
                     </button>
                 </div>
 
-                <div className="text-center mt-4">
-                    <p className="cursor-pointer text-sm text-gray-600">
-                        Don't have an account? <span onClick={() => state(false)} className="text-blue-500 hover:text-blue-700">Register</span>
+                <div className="text-center mt-6">
+                    <p className="cursor-pointer text-sm text-slate-400">
+                        Don't have an account? <span onClick={() => state(false)} className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors">Register</span>
                     </p>
                 </div>
             </div>

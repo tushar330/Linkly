@@ -1,132 +1,129 @@
 import React, { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { getAllUserUrls } from '../api/user.api'
+import AnalyticsChart from './AnalyticsChart'
 
-const UserUrl = () => {
-  const { data: urls, isLoading, isError, error } = useQuery({
-    queryKey: ['userUrls'],
-    queryFn: getAllUserUrls,
-    refetchInterval: 30000, // Refetch every 30 seconds to update click counts
-    staleTime: 0, // Consider data stale immediately so it refetches when invalidated
-  })
+const UserUrl = ({ urls }) => {
+  // Data fetching moved to parent component
+  
   const [copiedId, setCopiedId] = useState(null)
-  const handleCopy = (url, id) => {
+  const [expandedId, setExpandedId] = useState(null)
+
+  const handleCopy = (url, id, e) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(url)
     setCopiedId(id)
-    
-    // Reset the copied state after 2 seconds
     setTimeout(() => {
       setCopiedId(null)
     }, 2000)
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center my-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-      </div>
-    )
+  const toggleAnalytics = (id) => {
+      setExpandedId(expandedId === id ? null : id);
   }
 
-  if (isError) {
+  if (!urls || urls.length === 0) {
     return (
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded my-4">
-        Error loading your URLs: {error.message}
-      </div>
-    )
-  }
-
-  if (!urls.urls || urls.urls.length === 0) {
-    return (
-      <div className="text-center text-gray-500 my-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-        <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <div className="text-center text-slate-500 py-12">
+        <svg className="w-16 h-16 mx-auto text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
         </svg>
-        <p className="text-lg font-medium">No URLs found</p>
-        <p className="mt-1">You haven't created any shortened URLs yet.</p>
+        <p className="text-xl font-medium text-slate-400">No URLs found</p>
+        <p className="mt-2 text-slate-600">Create your first shortened URL to get started.</p>
       </div>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg mt-5 shadow-md overflow-hidden">
-      
-      <div className="overflow-x-auto h-56">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+    <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-slate-700">
+          <thead className="bg-slate-700/50">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Original URL
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Short URL
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Clicks
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+               <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                Expiry
+              </th>
+              <th scope="col" className="px-6 py-4 text-right text-xs font-semibold text-slate-400 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {urls.urls.reverse().map((url) => (
-              <tr key={url._id} className="hover:bg-gray-50">
+          <tbody className="divide-y divide-slate-700 bg-transparent">
+            {urls.slice().reverse().map((url) => ( // Create copy to reverse
+              <React.Fragment key={url._id}>
+              <tr 
+                onClick={() => toggleAnalytics(url._id)}
+                className="hover:bg-slate-700/30 transition-colors cursor-pointer group"
+              >
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 truncate max-w-xs">
-                    {url.full_url}
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0 h-8 w-8 rounded bg-slate-700 flex items-center justify-center text-slate-400 mr-3">
+                         <img src={`https://www.google.com/s2/favicons?domain=${url.full_url}&sz=32`} alt="favicon" className="h-4 w-4 opacity-70" onError={(e) => {e.target.style.display='none'}} /> 
+                    </div>
+                    <div className="text-sm text-slate-300 truncate max-w-[200px]" title={url.full_url}>
+                      {url.full_url}
+                    </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm">
-                    <a 
-                      href={`http://localhost:3000/${url.short_url}`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-900 hover:underline"
-                    >
-                      {`localhost:3000/${url.short_url}`}
-                    </a>
-                  </div>
+                  <a 
+                    href={`http://localhost:3000/${url.short_url}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    className="text-sm font-medium text-indigo-400 hover:text-indigo-300 hover:underline transition-colors"
+                  >
+                    {url.custom_alias ? url.custom_alias : url.short_url}
+                  </a>
                 </td>
                 <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {url.clicks} {url.clicks === 1 ? 'click' : 'clicks'}
+                  <div className="flex items-center">
+                     <span className="px-2.5 py-0.5 inline-flex text-xs leading-4 font-semibold rounded-full bg-slate-700 text-slate-300 border border-slate-600 group-hover:bg-indigo-500/20 group-hover:text-indigo-200 transition-colors">
+                      {url.clicks}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-sm font-medium">
-                  <button
-                    onClick={() => handleCopy(`http://localhost:3000/${url.short_url}`, url._id)}
-                    className={`inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm ${
-                      copiedId === url._id
-                        ? 'bg-green-600 text-white hover:bg-green-700'
-                        : 'bg-blue-600 text-white hover:bg-blue-700'
-                    } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200`}
-                  >
-                    {copiedId === url._id ? (
-                      <>
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
-                        </svg>
-                        Copy URL
-                      </>
-                    )}
-                  </button>
+                <td className="px-6 py-4 text-sm text-slate-400">
+                    {url.expires_at ? new Date(url.expires_at).toLocaleDateString() : 'Never'}
+                </td>
+                <td className="px-6 py-4 text-right text-sm font-medium">
+                  <div className="flex items-center justify-end space-x-3">
+                      <button
+                        onClick={(e) => handleCopy(`http://localhost:3000/${url.short_url}`, url._id, e)}
+                        className={`inline-flex items-center px-3 py-1.5 border border-slate-600 text-xs font-medium rounded-lg shadow-sm transition-all duration-200 ${
+                          copiedId === url._id
+                            ? 'bg-green-500/20 text-green-400 border-green-500/50'
+                            : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'
+                        }`}
+                      >
+                        {copiedId === url._id ? 'Copied' : 'Copy'}
+                      </button>
+                      <button 
+                         className="text-slate-500 hover:text-slate-300 transform transition-transform duration-200"
+                         style={{ transform: expandedId === url._id ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                      >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                      </button>
+                  </div>
                 </td>
               </tr>
+              {expandedId === url._id && (
+                  <tr>
+                      <td colSpan="5" className="px-6 py-4 bg-slate-800/30 animate-fade-in-down">
+                          <AnalyticsChart data={url.analytics} />
+                      </td>
+                  </tr>
+              )}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
-      </div>
     </div>
   )
 }

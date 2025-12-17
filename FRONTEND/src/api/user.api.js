@@ -24,3 +24,12 @@ export const getAllUserUrls = async () =>{
     const {data} = await axiosInstance.post("/api/user/urls")
     return data
 }
+
+export const updateUserProfile = async (formData) => {
+    const { data } = await axiosInstance.put("/api/user/profile", formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return data;
+};
