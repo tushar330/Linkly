@@ -73,7 +73,7 @@ const UserUrl = ({ urls }) => {
                 </td>
                 <td className="px-6 py-4">
                   <a 
-                    href={`http://localhost:3000/${url.short_url}`} 
+                    href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${url.short_url}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
@@ -95,7 +95,7 @@ const UserUrl = ({ urls }) => {
                 <td className="px-6 py-4 text-right text-sm font-medium">
                   <div className="flex items-center justify-end space-x-3">
                       <button
-                        onClick={(e) => handleCopy(`http://localhost:3000/${url.short_url}`, url._id, e)}
+                        onClick={(e) => handleCopy(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${url.short_url}`, url._id, e)}
                         className={`inline-flex items-center px-3 py-1.5 border border-slate-600 text-xs font-medium rounded-lg shadow-sm transition-all duration-200 ${
                           copiedId === url._id
                             ? 'bg-green-500/20 text-green-400 border-green-500/50'
