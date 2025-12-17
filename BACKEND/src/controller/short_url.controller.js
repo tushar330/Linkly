@@ -40,10 +40,17 @@ export const redirectFromShortUrl = wrapAsync(async (req,res)=>{
     const geo = geoip.lookup(ip);
     const userAgent = req.headers['user-agent'];
 
-    const url = await getShortUrl(id, ip, userAgent, geo) // This increments clicks and adds timestamp with geo data
+    const url = await getShortUrl(id, ip, userAgent, geo) 
+    
     if(!url) {
-        // It might be expired (TTL) or not found
-        return res.status(404).send("Short URL not found or expired")
+        return res.status(404).send(`Short URL "${id}" not found`)
+    }
+    
+    // Explicit expiry check
+    if (url.expires_at) {
+         if (new Date() > new Date(url.expires_at)) {
+            return res.status(410).send("Short URL has expired")
+         }
     }
     
     // Explicit expiry check (if TTL index hasn't kicked in yet)
