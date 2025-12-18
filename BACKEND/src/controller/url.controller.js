@@ -3,6 +3,7 @@ import ShortUrl from "../models/shortUrl.model.js";
 import { generateUniqueCode } from "../utils/generateCode.js";
 import { calculateExpiry } from "../utils/expiry.js";
 import geoip from "geoip-lite";
+import requestIp from "request-ip";
 
 export const createShortUrl = async (req, res) => {
   try {
@@ -84,8 +85,9 @@ export const redirectUrl = async (req, res) => {
       }
 
       // Async Analytics (Fire and Forget)
-      const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
+      const ip = requestIp.getClientIp(req);
       const geo = geoip.lookup(ip);
+      console.log("Debug Analytics:", { originalIp: req.ip, resolvedIp: ip, geo }); // Temporary Log
       const analyticsData = {
         timestamp: new Date(),
         ip: ip,
