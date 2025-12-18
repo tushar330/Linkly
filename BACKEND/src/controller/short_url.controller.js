@@ -40,7 +40,9 @@ export const redirectFromShortUrl = wrapAsync(async (req,res)=>{
     const geo = geoip.lookup(ip);
     const userAgent = req.headers['user-agent'];
 
+    console.log(`[DEBUG] Looking up short URL: ${id}`);
     const url = await getShortUrl(id, ip, userAgent, geo) 
+    console.log(`[DEBUG] Lookup Result for ${id}:`, url ? "Found" : "Not Found");
     
     if(!url) {
         return res.status(404).send(`Short URL "${id}" not found`)
