@@ -87,7 +87,7 @@ export const redirectUrl = async (req, res) => {
       // Async Analytics (Fire and Forget)
       const ip = requestIp.getClientIp(req);
       const geo = geoip.lookup(ip);
-      console.log("Debug Analytics:", { originalIp: req.ip, resolvedIp: ip, geo }); // Temporary Log
+
       const analyticsData = {
         timestamp: new Date(),
         ip: ip,
