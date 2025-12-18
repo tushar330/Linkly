@@ -1,4 +1,4 @@
-# Linkly (Refactor v2.0)
+# Linkly 
 
 Linkly is a production-grade URL shortener featuring real-time analytics, geolocation tracking, and persistent user profiles.
 
