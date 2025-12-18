@@ -84,10 +84,11 @@ export const redirectUrl = async (req, res) => {
       }
 
       // Async Analytics (Fire and Forget)
-      const geo = geoip.lookup(req.ip);
+      const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
+      const geo = geoip.lookup(ip);
       const analyticsData = {
         timestamp: new Date(),
-        ip: req.ip,
+        ip: ip,
         userAgent: req.headers["user-agent"],
         country: geo?.country || "Unidentified",
         city: geo?.city || "Unidentified",
