@@ -85,7 +85,7 @@ const DashboardPage = () => {
   // ... (Stats Logic remains same)
   const urls = urlsData?.urls || [];
   const totalClicks = urls.reduce((sum, url) => sum + url.clicks, 0);
-  const activeLinks = urls.length;
+  const activeLinks = urls.filter(url => !url.expiresAt || new Date() < new Date(url.expiresAt)).length;
   const avgClicks = activeLinks > 0 ? Math.round(totalClicks / activeLinks) : 0;
   
   // ... (Analytics Logic remains same)
