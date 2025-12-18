@@ -44,13 +44,18 @@ export const createShortUrl = async (req, res) => {
 
       const expiresAt = calculateExpiry(expiresIn);
 
-      const shortUrl = await ShortUrl.create({
+      const urlPayload = {
         originalUrl,
         shortCode,
-        customAlias: (customAlias && customAlias.trim() !== "") ? customAlias : undefined,
         userId,
         expiresAt
-      });
+      };
+
+      if (customAlias && customAlias.trim() !== "") {
+          urlPayload.customAlias = customAlias;
+      }
+
+      const shortUrl = await ShortUrl.create(urlPayload);
 
       res.status(201).json({
         shortUrl: `${process.env.APP_URL}/${shortUrl.shortCode}`,
