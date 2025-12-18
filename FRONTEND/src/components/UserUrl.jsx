@@ -64,22 +64,22 @@ const UserUrl = ({ urls }) => {
                 <td className="px-6 py-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-8 w-8 rounded bg-slate-700 flex items-center justify-center text-slate-400 mr-3">
-                         <img src={`https://www.google.com/s2/favicons?domain=${url.full_url}&sz=32`} alt="favicon" className="h-4 w-4 opacity-70" onError={(e) => {e.target.style.display='none'}} /> 
+                         <img src={`https://www.google.com/s2/favicons?domain=${url.originalUrl}&sz=32`} alt="favicon" className="h-4 w-4 opacity-70" onError={(e) => {e.target.style.display='none'}} /> 
                     </div>
-                    <div className="text-sm text-slate-300 truncate max-w-[200px]" title={url.full_url}>
-                      {url.full_url}
+                    <div className="text-sm text-slate-300 truncate max-w-[200px]" title={url.originalUrl}>
+                      {url.originalUrl}
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4">
                   <a 
-                    href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${url.short_url}`} 
+                    href={`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${url.shortCode}`} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     className="text-sm font-medium text-indigo-400 hover:text-indigo-300 hover:underline transition-colors"
                   >
-                    {url.custom_alias ? url.custom_alias : url.short_url}
+                    {url.customAlias ? url.customAlias : url.shortCode}
                   </a>
                 </td>
                 <td className="px-6 py-4">
@@ -90,12 +90,12 @@ const UserUrl = ({ urls }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-400">
-                    {url.expires_at ? new Date(url.expires_at).toLocaleDateString() : 'Never'}
+                    {url.expiresAt ? new Date(url.expiresAt).toLocaleDateString() : 'Never'}
                 </td>
                 <td className="px-6 py-4 text-right text-sm font-medium">
                   <div className="flex items-center justify-end space-x-3">
                       <button
-                        onClick={(e) => handleCopy(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${url.short_url}`, url._id, e)}
+                        onClick={(e) => handleCopy(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/${url.shortCode}`, url._id, e)}
                         className={`inline-flex items-center px-3 py-1.5 border border-slate-600 text-xs font-medium rounded-lg shadow-sm transition-all duration-200 ${
                           copiedId === url._id
                             ? 'bg-green-500/20 text-green-400 border-green-500/50'

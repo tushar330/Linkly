@@ -1,10 +1,10 @@
 import wrapAsync from "../utils/tryCatchWrapper.js"
-import { getAllUserUrlsDao } from "../dao/user.dao.js"
 import User from "../models/user.model.js"
+import ShortUrl from "../models/shortUrl.model.js"
 
 export const getAllUserUrls = wrapAsync(async (req, res) => {
     const {_id} = req.user
-    const urls = await getAllUserUrlsDao(_id)
+    const urls = await ShortUrl.find({userId: _id}).sort({createdAt: -1}) // Add sort for niceness
     res.status(200).json({message:"success",urls})
 })
 
