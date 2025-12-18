@@ -51,4 +51,4 @@ const shortUrlSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("ShortUrl", shortUrlSchema);
+export default mongoose.model("Url", shortUrlSchema);
