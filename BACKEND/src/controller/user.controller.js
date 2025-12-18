@@ -10,10 +10,11 @@ export const getAllUserUrls = wrapAsync(async (req, res) => {
 
 export const updateUserProfile = wrapAsync(async (req, res) => {
     const userId = req.user._id;
-    const { email } = req.body;
+    const { email, name } = req.body;
     let updateData = {};
 
     if (email) updateData.email = email;
+    if (name) updateData.name = name;
     
     if (req.file) {
         // Construct the full URL for the avatar
