@@ -90,7 +90,13 @@ const UserUrl = ({ urls }) => {
                   </div>
                 </td>
                 <td className="px-6 py-4 text-sm text-slate-400">
-                    {url.expiresAt ? new Date(url.expiresAt).toLocaleDateString() : 'Never'}
+                    {url.expiresAt && new Date() > new Date(url.expiresAt) ? (
+                      <span className="px-2 py-0.5 inline-flex text-xs leading-4 font-semibold rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
+                        Expired
+                      </span>
+                    ) : (
+                      url.expiresAt ? new Date(url.expiresAt).toLocaleDateString() : 'Never'
+                    )}
                 </td>
                 <td className="px-6 py-4 text-right text-sm font-medium">
                   <div className="flex items-center justify-end space-x-3">
