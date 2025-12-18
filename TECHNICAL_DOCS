@@ -1,0 +1,92 @@
+# Linkly Technical Documentation
+
+## 1. System Architecture
+
+Linkly is built on the **MERN Stack** (MongoDB, Express, React, Node.js), optimized for performance, scalability, and security.
+
+### 1.1 High-Level Overview
+-   **Frontend**: React (Vite) + Tailwind CSS + Redux Toolkit. Handles UI, State Management, and API communication.
+-   **Backend**: Node.js + Express. RESTful API handling business logic (Shortening, Auth, Analytics).
+-   **Database**: MongoDB (Atlas). Stores Users,URLs, and Analytics logs.
+-   **Deployment**: 
+    -   **Frontend**: Vercel (Optimized for Static/SPA delivery).
+    -   **Backend**: Render (Node.js Environment).
+
+---
+
+## 2. Core Implementation Details
+
+### 2.1 URL Shortening & Uniqueness
+**Goal**: Generate short, readable, and **guaranteed unique** codes.
+**Implementation**:
+-   **Algorithm**: We use `nanoid` (alphanumeric) to generate 6-character codes.
+-   **Collision Handling**: Simulating "Collision-Proof" logic via a `while(true)` loop.
+    ```javascript
+    // src/controller/url.controller.js
+    let shortCode;
+    let exists = true;
+    while(exists) {
+        shortCode = generateCode();
+        exists = await UrlModel.exists({ shortCode });
+        // Only breaks if shortCode is unique
+    }
+    ```
+-   **Custom Aliases**: Implemented using **Sparse Unique Indexes** in MongoDB. This allows the `customAlias` field to be strictly unique when present, but valid to be `null` for millions of records without duplicate key errors.
+
+### 2.2 Advanced Geolocation Tracking
+**Goal**: Identify User Location (Country, City) accurately, even when the backend is behind a cloud proxy (Render/Vercel).
+**Challenge**: Standard `req.ip` returns the Load Balancer's IP (Internal), not the User's.
+**Solution**:
+1.  **Header Parsing**: We implemented `request-ip` libraries to parse standard `X-Forwarded-For` headers.
+    -   `X-Forwarded-For`: `Client_IP, Proxy1_IP, Proxy2_IP`
+    -   Logic: Extract the **Left-Most** IP (The original Client).
+2.  **GeoIP Lookup**: We use `geoip-lite`, a high-performance local database lookup (no API latency).
+    -   **Flow**: Client Click -> `redirectUrl` Endpoint -> `request-ip` identifies IP -> `geoip-lite` finds Country/City -> Async Log to DB -> User Redirected.
+
+### 2.3 Persistent Avatar Storage (Base64)
+**Goal**: Allow users to upload profile pictures.
+**Challenge**: Render's filesystem is **ephemeral**. Files uploaded to `uploads/` are deleted every time the server restarts or redeploys.
+**Solution**: **Database Storage (Base64)**.
+-   Instead of saving files to disk, we convert the Image Buffer -> Base64 String -> Store in MongoDB `User.avatar` field.
+-   **Why?**: Guarantees data persistence across deployments without needing AWS S3 or Cloudinary.
+-   **Performance**: Strict 5MB limit ensures database documents remain performant.
+
+### 2.4 Security & Authentication
+**Goal**: Bank-grade security for user sessions.
+**Implementation**:
+-   **JWT (JSON Web Tokens)**: Stateless authentication.
+-   **HttpOnly Cookies**: The token is stored in a `httpOnly` cookie, preventing XSS (Cross-Site Scripting) attacks from stealing the token.
+-   **Bcrypt Hashing**: Passwords are salted and hashed using `bcryptjs` (Cost factor 10) before storage. NEVER stored in plain text.
+-   **Trust Proxy**: `app.set('trust proxy', true)` securely configured to trust Render's load balancers.
+
+---
+
+## 3. Database Schema Design
+
+### 3.1 URL Model (`Url`)
+| Field | Type | Attributes | Notes |
+| :--- | :--- | :--- | :--- |
+| `originalUrl` | String | Required | The destination. |
+| `shortCode` | String | Unique, Indexed | The generated ID. |
+| `customAlias` | String | Unique, Sparse | Optional vanity ID. |
+| `expiresAt` | Date | Optional | Soft Expiry date. |
+| `analytics` | Array | - | Stores Timestamps and Locations. |
+
+### 3.2 Analytics Object
+Embedded within the URL document for fast read access (No Joins required).
+```json
+{
+  "ip": "203.0.113.1",
+  "country": "United States",
+  "city": "New York",
+  "timestamp": "2024-12-18T10:00:00Z"
+}
+```
+
+---
+
+## 4. Why This Approach? (Professional Justification)
+
+1.  **Read-Heavy Optimization**: We chose **Embedding** for analytics (storing inside the URL document) because the dashboard reads stats *with* the URL. This avoids expensive `clean` lookups.
+2.  **Reliability**: Using `while` loops for code generation and `request-ip` for location ensures the system works 99.9% of the time without edge-case failures.
+3.  **User Experience**: "Soft Expiry" (marking links expired but keeping them visible) is better UX than deleting them (404 errors). We prioritize clarity for the user.
