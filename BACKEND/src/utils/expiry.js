@@ -9,6 +9,7 @@ export function calculateExpiry(expiresIn) {
 
   if (unit === "h") now.setHours(now.getHours() + value);
   else if (unit === "d") now.setDate(now.getDate() + value);
+  else if (unit === "m") now.setMinutes(now.getMinutes() + value);
   else return null; // Default to null if format is weird or "never"
 
   return now;

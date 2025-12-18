@@ -2,6 +2,7 @@
 import ShortUrl from "../models/shortUrl.model.js";
 import { generateUniqueCode } from "../utils/generateCode.js";
 import { calculateExpiry } from "../utils/expiry.js";
+import geoip from "geoip-lite";
 
 export const createShortUrl = async (req, res) => {
   try {
@@ -78,13 +79,16 @@ export const redirectUrl = async (req, res) => {
       }
 
       // Async Analytics (Fire and Forget)
+      const geo = geoip.lookup(req.ip);
       const analyticsData = {
+        timestamp: new Date(),
+        ip: req.ip,
         userAgent: req.headers["user-agent"],
-        ip: req.ip // or request-ip middleware
+        country: geo?.country || "Unidentified",
+        city: geo?.city || "Unidentified",
+        device: "Desktop" // Simplified, would need a library for parsing UA
       };
       
-      // We push to analytics array. 
-      // Mongoose might complain if we don't await save.
       url.clicks += 1;
       url.analytics.push(analyticsData);
       await url.save();
