@@ -1,12 +1,12 @@
 
 import express from "express";
 import { createShortUrl, redirectUrl, getUrlStats } from "../controller/url.controller.js";
-import { isAuthenticated } from "../middleware/auth.middleware.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/create", isAuthenticated, createShortUrl);
-router.get("/stats/:id", isAuthenticated, getUrlStats); // Keep existing stats capability
+router.post("/create", authMiddleware, createShortUrl);
+router.get("/stats/:id", authMiddleware, getUrlStats); // Keep existing stats capability
 // Redirect is handled in app.js usually for root /:id, or here if mounted at /
 // User plan says: router.get("/:id", redirectUrl); 
 // But in app.js it was `app.get("/:id", redirectFromShortUrl)`
