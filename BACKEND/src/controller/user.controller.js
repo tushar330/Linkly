@@ -17,9 +17,10 @@ export const updateUserProfile = wrapAsync(async (req, res) => {
     if (name) updateData.name = name;
     
     if (req.file) {
-        // Construct the full URL for the avatar
-        const appUrl = process.env.APP_URL.replace(/\/$/, ""); // Remove trailing slash if exists
-        updateData.avatar = `${appUrl}/uploads/${req.file.filename}`;
+        // Convert buffer to Base64
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const mimeType = req.file.mimetype;
+        updateData.avatar = `data:${mimeType};base64,${b64}`;
     }
 
     const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
