@@ -17,16 +17,6 @@ router.get("/stats/:id", authMiddleware, getUrlStats); // Keep existing stats ca
 // app.use("/api/url", router) -> /api/url/create
 // app.get("/:id", redirectUrl) -> /foo
 
-// Debug Route
-router.get("/debug-ip", (req, res) => {
-    const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() || req.ip;
-    // or use request-ip if available
-    res.json({
-        ip: req.ip,
-        xForwardedFor: req.headers['x-forwarded-for'],
-        resolvedIp: ip,
-        geo: "Check console or implement geoip lookup here locally if imported"
-    });
-});
+
 
 export default router;
