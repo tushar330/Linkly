@@ -13,7 +13,7 @@ Linkly is a production-grade URL shortener featuring real-time analytics, geoloc
 -   **Real-Time Geolocation**: 
     -   Uses `request-ip` to correctly identify client IPs behind proxies (like Render/Vercel).
     -   Resolves locations using `geoip-lite` database.
--   **Click Tracking**: Records timestamps, IP, and User-Agent for every visit.
+-  **Click Tracking**: Aggregates timestamps to show daily traffic trends.
 -   **Dashboard**: Visualizes clicks and country distribution using Recharts.
 
 ### 🛡️ Robust Architecture
