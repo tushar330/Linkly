@@ -1,4 +1,4 @@
-import { createUser, findUserByEmail, findUserByEmailByPassword } from "../dao/user.dao.js"
+import { createUser, findUserByEmail, findUserByEmailByPassword, findUserById } from "../dao/user.dao.js"
 import { ConflictError, UnauthorizedError } from "../utils/errorHandler.js"
 import {signToken} from "../utils/helper.js"
 
@@ -17,6 +17,8 @@ export const loginUser = async (email, password) => {
     const isPasswordValid = await user.comparePassword(password)
     if(!isPasswordValid) throw new UnauthorizedError("Invalid email or password")
     const token = signToken({id: user._id})
-    return {token,user}
+    // Refetch user to get clean implementation (no password, full name)
+    const userPayload = await findUserById(user._id);
+    return {token, user: userPayload}
 }
 
