@@ -47,7 +47,7 @@ export const createShortUrl = async (req, res) => {
       const shortUrl = await ShortUrl.create({
         originalUrl,
         shortCode,
-        customAlias: (customAlias && customAlias.trim() !== "") ? customAlias : null,
+        customAlias: (customAlias && customAlias.trim() !== "") ? customAlias : undefined,
         userId,
         expiresAt
       });

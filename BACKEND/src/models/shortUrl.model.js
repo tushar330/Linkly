@@ -44,8 +44,7 @@ const shortUrlSchema = new mongoose.Schema(
     analytics: [analyticsSchema],
 
     expiresAt: {
-      type: Date,
-      index: { expires: 0 } // TTL index
+      type: Date
     }
   },
   { timestamps: true }
